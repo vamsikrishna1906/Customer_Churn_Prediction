@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <meta name="description" content="Explore customer churn trends and telecom account segments.">
+  <title>Churn intelligence | Telecom analytics</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="Churn intelligence home">
+        <span class="brand-mark" aria-hidden="true">C</span>
+        <span class="brand-copy"><strong>signal<span>flow</span></strong><small>TELECOM ANALYTICS</small></span>
+      </a>
+
+      <div class="nav-caption">WORKSPACE</div>
+      <a class="nav-link active" href="#overview" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="8" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/></svg>
+        <span>Overview</span>
+      </a>
+      <a class="nav-link" href="#customers">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.4-3 2.3-4.7 5.5-4.7s5.1 1.7 5.5 4.7M16 5.2a3.1 3.1 0 0 1 0 5.9M17 14.5c2.2.5 3.4 2 3.6 4.5"/></svg>
+        <span>Customers</span>
+      </a>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-note">
+          <span class="note-icon" aria-hidden="true">i</span>
+          <p>Insights are calculated from the dataset you load. This dashboard does not generate individual churn predictions.</p>
+        </div>
+        <div class="profile">
+          <span class="profile-avatar" aria-hidden="true">TA</span>
+          <span><strong>Telecom analytics</strong><small>Local workspace</small></span>
+          <span class="profile-menu" aria-hidden="true">···</span>
+        </div>
+      </div>
+    </aside>
+
+    <main id="overview" class="main-content">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-separator">/</span><strong>Overview</strong></div>
+        <div class="topbar-actions">
+          <span class="local-badge"><span aria-hidden="true"></span> LOCAL DATA</span>
+          <button id="upload-trigger" class="button button-outline" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14.5v4A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-4"/></svg>
+            Load dataset
+          </button>
+          <input id="dataset-file" class="visually-hidden" type="file" accept=".csv,text/csv" aria-label="Choose a customer churn CSV file">
+        </div>
+      </header>
+
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-line"></span> CUSTOMER RETENTION</div>
+          <h1>Churn intelligence</h1>
+          <p class="page-subtitle">A clear view of customer health, churn patterns, and the segments that matter.</p>
+        </div>
+        <div class="dataset-status" id="dataset-status" role="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="dataset-name">Connecting to sample data…</span>
+        </div>
+      </section>
+
+      <section class="filter-bar" aria-label="Dashboard filters">
+        <div class="filter-heading">
+          <span class="filter-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 5h16M7 12h10m-7 7h4"/></svg>
+          </span>
+          <span>Filters</span>
+        </div>
+        <label class="filter-control">
+          <span>Contract</span>
+          <select id="contract-filter" disabled>
+            <option value="all">All contracts</option>
+          </select>
+        </label>
+        <label class="filter-control">
+          <span>Customer status</span>
+          <select id="status-filter" disabled>
+            <option value="all">All customers</option>
+            <option value="Yes">Churned</option>
+            <option value="No">Retained</option>
+          </select>
+        </label>
+        <label class="filter-control search-control">
+          <span class="visually-hidden">Search customers</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+          <input id="search-filter" type="search" placeholder="Search customer ID" autocomplete="off" disabled>
+        </label>
+        <button id="reset-filters" class="text-button" type="button" disabled>Reset filters</button>
+      </section>
+
+      <section class="metric-grid" aria-label="Customer churn metrics">
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">Total customers</span><span class="metric-icon icon-violet" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.4-3 2.3-4.7 5.5-4.7s5.1 1.7 5.5 4.7M16 5.2a3.1 3.1 0 0 1 0 5.9M17 14.5c2.2.5 3.4 2 3.6 4.5"/></svg>
+          </span></div>
+          <div id="metric-customers" class="metric-value">—</div>
+          <div class="metric-foot"><span class="metric-dot dot-violet"></span><span>Customers in current view</span></div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">Churn rate</span><span class="metric-icon icon-rose" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 17.5 9.2 12l3.6 3.4L20 7.5"/><path d="M14.5 7.5H20V13"/></svg>
+          </span></div>
+          <div class="metric-value metric-value-inline"><span id="metric-churn-rate">—</span><span id="metric-churn-change" class="metric-change">— churned</span></div>
+          <div class="metric-foot"><span class="metric-dot dot-rose"></span><span>Share of customers who left</span></div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">Churned customers</span><span class="metric-icon icon-amber" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3.5v10"/><path d="m8 10 4 4 4-4M5 16v2.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+          </span></div>
+          <div id="metric-churned" class="metric-value">—</div>
+          <div class="metric-foot"><span class="metric-dot dot-amber"></span><span>Customers marked as churned</span></div>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">Churned account charges</span><span class="metric-icon icon-teal" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3v18m5-13.5c0-1.5-1.8-2.5-5-2.5s-5 1-5 2.5 1.8 2.5 5 2.5 5 1 5 2.5-1.8 2.5-5 2.5-5-1-5-2.5"/></svg>
+          </span></div>
+          <div id="metric-revenue" class="metric-value">—</div>
+          <div class="metric-foot"><span class="metric-dot dot-teal"></span><span>Monthly charges for churned accounts</span></div>
+        </article>
+      </section>
+
+      <section class="chart-grid" aria-label="Churn analysis">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><h2>Churn by contract</h2><p>Which contract types see more customers leave?</p></div>
+            <span class="chart-badge">SEGMENTS</span>
+          </div>
+          <div id="contract-chart" class="chart-area" aria-live="polite"></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><h2>Churn by tenure</h2><p>Customer churn rate across account lifetime.</p></div>
+            <span class="chart-badge">TENURE</span>
+          </div>
+          <div id="tenure-chart" class="chart-area" aria-live="polite"></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><h2>Churn by internet service</h2><p>Compare churn across service categories.</p></div>
+            <span class="chart-badge">SERVICES</span>
+          </div>
+          <div id="internet-chart" class="chart-area" aria-live="polite"></div>
+        </article>
+      </section>
+
+      <section id="customers" class="panel customer-panel">
+        <div class="table-heading">
+          <div><h2>Customer explorer</h2><p>Search and review customer accounts in the current view.</p></div>
+          <button id="export-button" class="button button-outline export-button" type="button" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 16v2.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>
+            Export CSV
+          </button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">CUSTOMER</th><th scope="col">CONTRACT</th><th scope="col">TENURE</th><th scope="col">INTERNET SERVICE</th><th scope="col" class="number-cell">MONTHLY CHARGES</th><th scope="col">STATUS</th></tr></thead>
+            <tbody id="customer-rows"><tr><td class="empty-row" colspan="6">Load a dataset to explore customers.</td></tr></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span id="table-count">Waiting for dataset</span>
+          <div class="pagination"><button id="previous-page" type="button" aria-label="Previous page" disabled>←</button><span id="page-label">—</span><button id="next-page" type="button" aria-label="Next page" disabled>→</button></div>
+        </div>
+      </section>
+
+      <footer class="page-footer"><span>Signalflow · Telecom customer analytics</span><span>All analysis runs locally in your browser</span></footer>
+    </main>
+  </div>
+</body>
+</html>
